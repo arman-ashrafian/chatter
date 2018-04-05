@@ -18,7 +18,7 @@ const (
 var indexTemplate *template.Template
 
 func main() {
-	port := "3001"
+	port := "80"
 
 	r := mux.NewRouter()
 
