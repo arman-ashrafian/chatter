@@ -1,5 +1,3 @@
-$(() => {
-
-    console.log("HELLO")
-    
-})
+(function() {
+    console.log("WASSAP")
+})()
