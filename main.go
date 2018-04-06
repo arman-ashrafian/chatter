@@ -1,9 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"html/template"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
 
 	"github.com/gorilla/mux"
 )
@@ -18,7 +21,11 @@ const (
 var indexTemplate *template.Template
 
 func main() {
-	port := "3001"
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "8080" // dev port
+	}
 
 	r := mux.NewRouter()
 
@@ -33,6 +40,15 @@ func main() {
 	// handlers
 	r.HandleFunc("/", indexHandler)
 
+	// handle server kill
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt)
+	go func() {
+		<-signalChan
+		fmt.Println("\nKilling Server\n")
+		shutdownServer()
+	}()
+
 	// start server
 	log.Println("Starting Server - Port " + port)
 	http.ListenAndServe(":"+port, r)
@@ -41,4 +57,9 @@ func main() {
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.URL)
 	indexTemplate.ExecuteTemplate(w, "base", "Arman Ashrafian")
+}
+
+func shutdownServer() {
+	fmt.Println("Server shutdown")
+	os.Exit(0)
 }
