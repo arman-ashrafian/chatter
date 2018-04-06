@@ -1,0 +1,55 @@
+<!-- Title -->
+{{ define "title" }} Login {{ end }}
+
+<!-- Page Content -->
+{{define "content" }}
+
+<!-- CSS -->
+<style>
+    #login {
+        text-align: center;
+    }
+</style>
+
+<div id="my_name">
+    <h1>Arman Ashrafian</h1>
+</div>
+
+<div id="login">
+    <input type="text" id="username">
+    <input type="password" id="password">
+    <button id="loginButton">Login</button>
+</div>
+
+{{ end }}
+
+<!-- Javascript -->
+{{define "js"}}
+<!-- <script src="/static/main.js"></script> -->
+<script>
+(function() {
+
+var button = document.getElementById("loginButton")
+var uname  = document.getElementById("username")
+var pword  = document.getElementById("password")
+
+button.addEventListener('click', () => {
+    var lf = {
+        username: uname.value,
+        password: pword.value
+    }
+
+    $.post("/login", JSON.stringify(lf), (resp) => {
+        console.log(resp)
+    })
+})
+
+})()
+
+</script>
+<!-- jquery -->
+<script
+src="https://code.jquery.com/jquery-3.3.1.min.js"
+integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+crossorigin="anonymous"></script>
+{{end}}

@@ -3,10 +3,6 @@ html {
     font-family: 'Roboto Mono', monospace;
 }
 
-#my_name, #index_content {
+#my_name {
     text-align: center;
-}
-
-#index_content {
-    color: #1B5E20;
 }

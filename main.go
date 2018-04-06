@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -16,9 +17,11 @@ const (
 	vuejsCDN       = "https://cdn.jsdelivr.net/npm/vue"
 	basePath       = "./templates/base.html"
 	indexPath      = "./templates/index.html"
+	loginPath      = "./templates/login.html"
 )
 
 var indexTemplate *template.Template
+var logins map[string]string
 
 func main() {
 	port := os.Getenv("PORT")
@@ -39,6 +42,7 @@ func main() {
 
 	// handlers
 	r.HandleFunc("/", indexHandler)
+	r.HandleFunc("/login", loginHandler)
 
 	// handle server kill
 	signalChan := make(chan os.Signal, 1)
@@ -57,6 +61,31 @@ func main() {
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.URL)
 	indexTemplate.ExecuteTemplate(w, "base", "Arman Ashrafian")
+}
+
+type loginForm struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println(r.URL)
+	if r.Method == "POST" {
+		var lf loginForm
+		err := json.NewDecoder(r.Body).Decode(&lf)
+
+		if err != nil {
+			log.Println("Could not decode json")
+		}
+
+		fmt.Println("Username: " + lf.Username)
+		fmt.Println("Password: " + lf.Password)
+
+		return
+	}
+
+	t, _ := template.ParseFiles(basePath, loginPath)
+	t.ExecuteTemplate(w, "base", "")
 }
 
 func shutdownServer() {
