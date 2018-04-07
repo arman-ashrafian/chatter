@@ -50,7 +50,7 @@ func main() {
 			http.FileServer(http.Dir("static"))))
 
 	// handlers
-	r.HandleFunc("/", loginreqindexHandler)
+	r.HandleFunc("/", indexHandler)
 	r.HandleFunc("/login", loginHandler)
 
 	// handle server kill
