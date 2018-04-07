@@ -3,10 +3,21 @@ html {
     font-family: 'Roboto Mono', monospace;
 }
 
-#my_name, #index_content {
+#my_name {
     text-align: center;
 }
 
-#index_content {
-    color: #1B5E20;
+/* label focus color */
+.input-field input:focus + label {
+    color: red !important;
+}
+/* label underline focus color */
+.row .input-field input:focus {
+    border-bottom: 2px solid #0d47a1   !important;
+    box-shadow: 0 2px 0 0 #0d47a1   !important;
+}
+
+.row .input-field input {
+    border-bottom: .5px solid #03a9f4   !important;
+    box-shadow: 0 .5px 0 0 #03a9f4   !important;
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
@@ -9,6 +10,7 @@ import (
 	"os/signal"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 )
 
 const (
@@ -16,9 +18,15 @@ const (
 	vuejsCDN       = "https://cdn.jsdelivr.net/npm/vue"
 	basePath       = "./templates/base.html"
 	indexPath      = "./templates/index.html"
+	loginPath      = "./templates/login.html"
 )
 
-var indexTemplate *template.Template
+var (
+	indexTemplate *template.Template
+	logins        map[string]string
+	sessionkey    = []byte("secret-key")
+	store         = sessions.NewCookieStore(sessionkey)
+)
 
 func main() {
 	port := os.Getenv("PORT")
@@ -29,6 +37,10 @@ func main() {
 
 	r := mux.NewRouter()
 
+	// populate logins
+	logins = make(map[string]string)
+	logins["arman"] = "ash"
+
 	// cache index template
 	indexTemplate = template.Must(template.ParseFiles(basePath, indexPath))
 
@@ -38,14 +50,15 @@ func main() {
 			http.FileServer(http.Dir("static"))))
 
 	// handlers
-	r.HandleFunc("/", indexHandler)
+	r.HandleFunc("/", reqLogin(indexHandler))
+	r.HandleFunc("/login", loginHandler)
 
 	// handle server kill
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt)
 	go func() {
 		<-signalChan
-		fmt.Println("\nKilling Server\n")
+		fmt.Printf("\nKilling Server\n\n")
 		shutdownServer()
 	}()
 
@@ -54,12 +67,68 @@ func main() {
 	http.ListenAndServe(":"+port, r)
 }
 
+func reqLogin(f http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session, _ := store.Get(r, "auth")
+		if auth, ok := session.Values["auth"].(bool); !ok || !auth {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+		}
+		f(w, r)
+	}
+}
+
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.URL)
+	log.Println(r.Method + " --> " + r.URL.String())
+
 	indexTemplate.ExecuteTemplate(w, "base", "Arman Ashrafian")
 }
 
-func shutdownServer() {
-	fmt.Println("Server shutdown")
-	os.Exit(0)
+type loginForm struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type loginResponse struct {
+	Status string `json:"status"`
+}
+
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println(r.Method + " --> " + r.URL.String())
+	if r.Method == "POST" {
+		var lf loginForm
+		err := json.NewDecoder(r.Body).Decode(&lf)
+		loginResp := loginResponse{"ok"}
+		if err != nil {
+			log.Println("Could not decode json")
+			loginResp.Status = "error"
+		}
+
+		valid := checkLogin(lf.Username, lf.Password)
+
+		if valid {
+			// set auth cookie
+			session, _ := store.Get(r, "auth")
+			session.Values["auth"] = true
+			session.Save(r, w)
+		} else {
+			loginResp.Status = "error"
+		}
+
+		// send status
+		// "okay" or "error"
+		sendJSON(w, loginResp)
+		return
+	}
+
+	// GET login page
+	t, _ := template.ParseFiles(basePath, loginPath)
+	t.ExecuteTemplate(w, "base", "")
+}
+
+func checkLogin(uname, pword string) bool {
+	realpass, ok := logins[uname]
+	if !ok {
+		return false
+	}
+	return pword == realpass
 }
