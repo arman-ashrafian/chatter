@@ -1,67 +1,90 @@
 <!-- Title -->
-{{ define "title" }} Login {{ end }}
+{{ define "title" }} Login {{ end }} {{ define "style" }}
+<!-- CSS -->
+<style>
+    #loginError {
+        color: rgb(255, 68, 68);
+        text-align: center;
+    }
+
+    input {
+        background-color: #000;
+    }
+
+    #loginCard {
+        padding: 50px;
+        font-size: 60pt;
+        background-color: #004d40;
+    }
+
+    input,
+    select,
+    textarea {
+        color: #fff;
+    }
+</style>
+{{ end }}
 
 <!-- Page Content -->
 {{define "content" }}
 
-<!-- CSS -->
-<style>
-#login {
-    text-align: center;
-}
+<div class="container">
+    <div id="my_name">
+        <h1>woo.</h1>
+    </div>
 
-#loginerror {
-    color: rgb(255, 68, 68)
-}
+    <div class="col s12">
+        <div class="row">
+            <div class="input-field" id="loginCard">
+                <input type="text" id="username" placeholder="uSeRnAmE">
+                <input type="password" id="password" placeholder="pAsSwOrD">
+                <div class="center-align">
+                    <button class="btn btn-lg btn-primary blue darken-4 text-center" id="loginButton">Login</button>
+                </div>
+                <p class="flow-text" id='loginError'>
+                    </h3>
+            </div>
+        </div>
+    </div>
 
-</style>
-
-<div id="my_name">
-    <h1>Arman Ashrafian</h1>
-</div>
-
-<div id="login">
-    <input type="text" id="username">
-    <input type="password" id="password">
-    <button id="loginButton">Login</button>
-    <h3 id='loginerror'></h3>
 </div>
 
 {{ end }}
 
 <!-- Javascript -->
-{{define "js"}}
-<!-- <script src="/static/main.js"></script> -->
+{{ define "js" }}
 <script>
-(function() {
+    $(() => {
+        var button = document.getElementById("loginButton")
+        var uname = document.getElementById("username")
+        var pword = document.getElementById("password")
+        var error = document.getElementById("loginError")
 
-var button = document.getElementById("loginButton")
-var uname  = document.getElementById("username")
-var pword  = document.getElementById("password")
-var error  = document.getElementById("loginerror")
+        document.addEventListener('keydown', (e) => {
+            var ae = document.activeElement
+            if (e.keyCode === 13 && (ae === uname || ae === pword)) {
+                postLogin()
+            }
+        })
 
-button.addEventListener('click', () => {
-    var lf = {
-        username: uname.value,
-        password: pword.value
-    }
+        button.addEventListener('click', postLogin)
 
-    $.post("/login", JSON.stringify(lf), (resp) => {
-        if(resp.status === "error") {
-            pword.value = ""
-            error.innerHTML = "incorrect login"
-        } else {
-            window.location.replace("/")
+        function postLogin() {
+            var lf = {
+                username: uname.value,
+                password: pword.value
+            }
+
+            $.post("/login", JSON.stringify(lf), (resp) => {
+                if (resp.status === "error") {
+                    pword.value = ""
+                    error.innerHTML = "incorrect login"
+                } else {
+                    window.location.replace("/")
+                }
+            })
         }
+
     })
-})
 
-})()
-
-</script>
-<!-- jquery -->
-<script
-src="https://code.jquery.com/jquery-3.3.1.min.js"
-integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
-crossorigin="anonymous"></script>
-{{end}}
+</script> {{ end }}

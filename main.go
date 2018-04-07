@@ -126,9 +126,9 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func checkLogin(uname, pword string) bool {
-	valid := false
-	if logins[uname] == pword {
-		valid = true
+	realpass, ok := logins[uname]
+	if !ok {
+		return false
 	}
-	return valid
+	return pword == realpass
 }
