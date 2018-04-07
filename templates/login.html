@@ -6,9 +6,14 @@
 
 <!-- CSS -->
 <style>
-    #login {
-        text-align: center;
-    }
+#login {
+    text-align: center;
+}
+
+#loginerror {
+    color: rgb(255, 68, 68)
+}
+
 </style>
 
 <div id="my_name">
@@ -19,6 +24,7 @@
     <input type="text" id="username">
     <input type="password" id="password">
     <button id="loginButton">Login</button>
+    <h3 id='loginerror'></h3>
 </div>
 
 {{ end }}
@@ -32,6 +38,7 @@
 var button = document.getElementById("loginButton")
 var uname  = document.getElementById("username")
 var pword  = document.getElementById("password")
+var error  = document.getElementById("loginerror")
 
 button.addEventListener('click', () => {
     var lf = {
@@ -40,7 +47,12 @@ button.addEventListener('click', () => {
     }
 
     $.post("/login", JSON.stringify(lf), (resp) => {
-        console.log(resp)
+        if(resp.status === "error") {
+            pword.value = ""
+            error.innerHTML = "incorrect login"
+        } else {
+            window.location.replace("/")
+        }
     })
 })
 

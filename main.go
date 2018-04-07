@@ -32,6 +32,10 @@ func main() {
 
 	r := mux.NewRouter()
 
+	// populate logins
+	logins = make(map[string]string)
+	logins["arman"] = "ash"
+
 	// cache index template
 	indexTemplate = template.Must(template.ParseFiles(basePath, indexPath))
 
@@ -49,7 +53,7 @@ func main() {
 	signal.Notify(signalChan, os.Interrupt)
 	go func() {
 		<-signalChan
-		fmt.Println("\nKilling Server\n")
+		fmt.Printf("\nKilling Server\n\n")
 		shutdownServer()
 	}()
 
@@ -68,27 +72,42 @@ type loginForm struct {
 	Password string `json:"password"`
 }
 
+type loginResponse struct {
+	Status string `json:"status"`
+}
+
 func loginHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.URL)
+	log.Println(r.Method + " --> " + r.URL.String())
 	if r.Method == "POST" {
 		var lf loginForm
 		err := json.NewDecoder(r.Body).Decode(&lf)
-
+		loginResp := loginResponse{"ok"}
 		if err != nil {
 			log.Println("Could not decode json")
+			loginResp.Status = "error"
 		}
 
-		fmt.Println("Username: " + lf.Username)
-		fmt.Println("Password: " + lf.Password)
+		valid := checkLogin(lf.Username, lf.Password)
 
+		if !valid {
+			loginResp.Status = "error"
+		}
+
+		// send status
+		// "okay" or "error"
+		sendJSON(w, loginResp)
 		return
 	}
 
+	// GET login page
 	t, _ := template.ParseFiles(basePath, loginPath)
 	t.ExecuteTemplate(w, "base", "")
 }
 
-func shutdownServer() {
-	fmt.Println("Server shutdown")
-	os.Exit(0)
+func checkLogin(uname, pword string) bool {
+	valid := false
+	if logins[uname] == pword {
+		valid = true
+	}
+	return valid
 }
