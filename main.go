@@ -50,7 +50,7 @@ func main() {
 			http.FileServer(http.Dir("static"))))
 
 	// handlers
-	r.HandleFunc("/", indexHandler)
+	r.HandleFunc("/", reqLogin(indexHandler))
 	r.HandleFunc("/login", loginHandler)
 
 	// handle server kill
@@ -67,13 +67,18 @@ func main() {
 	http.ListenAndServe(":"+port, r)
 }
 
+func reqLogin(f http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session, _ := store.Get(r, "auth")
+		if auth, ok := session.Values["auth"].(bool); !ok || !auth {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+		}
+		f(w, r)
+	}
+}
+
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.Method + " --> " + r.URL.String())
-
-	session, _ := store.Get(r, "auth")
-	if auth, ok := session.Values["auth"].(bool); !ok || !auth {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-	}
 
 	indexTemplate.ExecuteTemplate(w, "base", "Arman Ashrafian")
 }
