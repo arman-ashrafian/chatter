@@ -10,6 +10,7 @@ import (
 	"os/signal"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 )
 
 const (
@@ -20,8 +21,12 @@ const (
 	loginPath      = "./templates/login.html"
 )
 
-var indexTemplate *template.Template
-var logins map[string]string
+var (
+	indexTemplate *template.Template
+	logins        map[string]string
+	sessionkey    = []byte("secret-key")
+	store         = sessions.NewCookieStore(sessionkey)
+)
 
 func main() {
 	port := os.Getenv("PORT")
@@ -45,7 +50,7 @@ func main() {
 			http.FileServer(http.Dir("static"))))
 
 	// handlers
-	r.HandleFunc("/", indexHandler)
+	r.HandleFunc("/", loginreqindexHandler)
 	r.HandleFunc("/login", loginHandler)
 
 	// handle server kill
@@ -63,7 +68,13 @@ func main() {
 }
 
 func indexHandler(w http.ResponseWriter, r *http.Request) {
-	log.Println(r.URL)
+	log.Println(r.Method + " --> " + r.URL.String())
+
+	session, _ := store.Get(r, "auth")
+	if auth, ok := session.Values["auth"].(bool); !ok || !auth {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+	}
+
 	indexTemplate.ExecuteTemplate(w, "base", "Arman Ashrafian")
 }
 
@@ -89,7 +100,12 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 
 		valid := checkLogin(lf.Username, lf.Password)
 
-		if !valid {
+		if valid {
+			// set auth cookie
+			session, _ := store.Get(r, "auth")
+			session.Values["auth"] = true
+			session.Save(r, w)
+		} else {
 			loginResp.Status = "error"
 		}
 
