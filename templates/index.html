@@ -1,12 +1,45 @@
 <!-- Title -->
-{{ define "title" }} Arman Ashrafian {{ end }}
-
-{{ define "style"}}
+{{ define "title" }} Arman Ashrafian {{ end }} {{ define "style"}}
 <!-- CSS -->
 <style>
+    html {
+        background-color: #fff;
+        overflow: hidden;
+        height: 100%;
+    }
+
     #index_content {
         color: #1B5E20;
         text-align: center;
+    }
+
+    .messagecard {
+        padding: .5em;
+        font-size: large !important;
+        margin-left: .5em;
+        margin-right: .2em;
+    }
+
+    #log {
+        position: absolute;
+        top: 0.5em;
+        left: 0.5em;
+        right: 0.5em;
+        bottom: 7em;
+        overflow: auto;
+    }
+
+    ::-webkit-scrollbar {
+        display: none;
+    }
+
+    #chatInput {
+        position: absolute;
+        bottom: 1em;
+        left: 0px;
+        width: 100%;
+        padding: .5em, .5em, .5em, .5em;
+        overflow: hidden;
     }
 </style>
 {{ end }}
@@ -14,16 +47,66 @@
 <!-- Page Content -->
 {{define "content" }}
 
-<div id="my_name">
-    <h1>Arman Ashrafian</h1>
+<!-- CHAT CONTAINER -->
+<div class="container" id="content">
+    <div class="row">
+        <div id="log" class="col s12"></div>
+    </div>
+
+    <div class="row">
+        <div class="input-field col s12" id="chatInput">
+            <i id="sendButton" class="material-icons prefix">send</i>
+            <input style="font-size: 24pt;" id="chatMsg" />
+        </div>
+    </div>
 </div>
 
-<div id="index_content">
-    <h3>Es not ready</h3>
+<!-- Modal Structure -->
+<div id="screennameModal" class="modal">
+    <div class="modal-content">
+        <div class="input-field">
+            <input type="text" id="screenname">
+            <label for="screenname">Screenname</label>
+        </div>
+        <h5 id="screennameError" class="red-text">Screenname taken.</h5>
+    </div>
+    <div class="modal-footer">
+        <a id="modalAgree" class="waves-effect waves-green btn-flat">Okay</a>
+    </div>
 </div>
 
 {{ end }}
 
 <!-- Javascript -->
 {{define "js"}}
+<!-- CHAT LOGIC -->
+<script>
+    let conn;
+    let msg = document.getElementById("msg");
+    let log = document.getElementById("log");
+    let screenname = "";
+
+    let websocketurl = "ws://" + document.location.host + "/chat"
+
+    conn = new WebSocket(websocketurl)
+
+    conn.onopen = () => {
+        let item = document.createElement('div')
+        item.innerHTML = '<b>connected to chat server</b>'
+        appendLog(item, "blue")
+    }
+
+    // appendLog
+    // param: html elem, background color of card 
+    // scrolls down if necessary
+    function appendLog(item, backgroundColor) {
+        let doScroll = log.scrollTop > log.scrollHeight - log.clientHeight - 1;
+        item.classList.add("card", "messagecard", backgroundColor, "lighten-1", "flow-text")
+        log.appendChild(item);
+        if (doScroll) {
+            log.scrollTop = log.scrollHeight - log.clientHeight;
+        }
+    }
+
+</script> 
 {{end}}

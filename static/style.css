@@ -1,10 +1,5 @@
 html {
-    background-color: #039BE5;
     font-family: 'Roboto Mono', monospace;
-}
-
-#my_name {
-    text-align: center;
 }
 
 /* label focus color */

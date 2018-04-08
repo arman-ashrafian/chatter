@@ -1,6 +1,7 @@
 package main
 
 import (
+	"digitaloceanssampleapp/chat"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -48,6 +49,10 @@ func main() {
 	r.PathPrefix("/static/").
 		Handler(http.StripPrefix("/static/",
 			http.FileServer(http.Dir("static"))))
+
+	// start chat server
+	server := chat.NewServer(r)
+	go server.Listen()
 
 	// handlers
 	r.HandleFunc("/", reqLogin(indexHandler))

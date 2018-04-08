@@ -2,6 +2,10 @@
 {{ define "title" }} Login {{ end }} {{ define "style" }}
 <!-- CSS -->
 <style>
+    #content {
+        background-color: #039BE5;
+    }
+
     #loginError {
         color: rgb(255, 68, 68);
         text-align: center;
@@ -28,7 +32,7 @@
 <!-- Page Content -->
 {{define "content" }}
 
-<div class="container">
+<div class="container" id="content">
     <div id="my_name">
         <h1>woo.</h1>
     </div>
