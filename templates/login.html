@@ -2,7 +2,7 @@
 {{ define "title" }} Login {{ end }} {{ define "style" }}
 <!-- CSS -->
 <style>
-    #content {
+    html {
         background-color: #039BE5;
     }
 
@@ -33,7 +33,7 @@
 {{define "content" }}
 
 <div class="container" id="content">
-    <div id="my_name">
+    <div class="center-align">
         <h1>woo.</h1>
     </div>
 
@@ -43,7 +43,7 @@
                 <input type="text" id="username" placeholder="uSeRnAmE">
                 <input type="password" id="password" placeholder="pAsSwOrD">
                 <div class="center-align">
-                    <button class="btn btn-lg btn-primary blue darken-4 text-center" id="loginButton">Login</button>
+                    <button class="btn btn-lg btn-primary blue darken-4" id="loginButton">Login</button>
                 </div>
                 <p class="flow-text" id='loginError'>
                     </h3>

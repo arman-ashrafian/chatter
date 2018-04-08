@@ -41,6 +41,9 @@ func main() {
 	// populate logins
 	logins = make(map[string]string)
 	logins["arman"] = "ash"
+	logins["andrew"] = "ilovearman"
+	logins["luis"] = "ilovearman"
+	logins["westin"] = "ilovearman"
 
 	// cache index template
 	indexTemplate = template.Must(template.ParseFiles(basePath, indexPath))

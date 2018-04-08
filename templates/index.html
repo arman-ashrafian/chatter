@@ -61,20 +61,6 @@
     </div>
 </div>
 
-<!-- Modal Structure -->
-<div id="screennameModal" class="modal">
-    <div class="modal-content">
-        <div class="input-field">
-            <input type="text" id="screenname">
-            <label for="screenname">Screenname</label>
-        </div>
-        <h5 id="screennameError" class="red-text">Screenname taken.</h5>
-    </div>
-    <div class="modal-footer">
-        <a id="modalAgree" class="waves-effect waves-green btn-flat">Okay</a>
-    </div>
-</div>
-
 {{ end }}
 
 <!-- Javascript -->
@@ -84,18 +70,33 @@
     let conn;
     let msg = document.getElementById("msg");
     let log = document.getElementById("log");
-    let screenname = "";
+    let username = "Arman";
+
+    console.log(getCookie("auth"))
 
     let websocketurl = "ws://" + document.location.host + "/chat"
-
     conn = new WebSocket(websocketurl)
+
+    /* Set events for send click & enter pressed */
+    $("#sendButton").click(send)
+    $("#chatMsg").keypress((e) => {
+        if (e.keyCode === 13) {
+            send();
+        }
+    })
 
     conn.onopen = () => {
         let item = document.createElement('div')
-        item.innerHTML = '<b>connected to chat server</b>'
-        appendLog(item, "blue")
+        item.innerHTML = '<b>connected to chat server (: </b>'
+        appendLog(item, "blue-grey")
     }
 
+    conn.onmessage = (e) => {
+        displayMessage(e.data)
+    }
+
+    
+    /* ************ FUNCTIONS ************ */
     // appendLog
     // param: html elem, background color of card 
     // scrolls down if necessary
@@ -106,6 +107,61 @@
         if (doScroll) {
             log.scrollTop = log.scrollHeight - log.clientHeight;
         }
+    }
+
+    // send message JSON object
+    function send() {
+        let msg = $("#chatMsg");
+
+        if (!conn || !msg.val()) {
+            return false;
+        }
+
+        let time = new Date()
+        let timeStamp = time.toLocaleString('en-US', { hour: 'numeric',minute:'numeric', hour12: true })
+        var messageDetails = {
+            userName: username,
+            body: msg.val(),
+            timestamp: timeStamp
+        }
+        conn.send(JSON.stringify(messageDetails))
+        msg.val("")
+    }
+
+    // displayMessage
+    // param: messsage to display to log
+    // decides background color depending message sender
+    function displayMessage(mes) {
+        let message = JSON.parse(mes)
+        let item = document.createElement("h4");
+
+        if (message.userName === username) {
+            backgroundColor = "blue";
+            item.style.cssText = "margin-left: 60px;";
+        } else {
+            backgroundColor = "grey";
+            item.style.cssText = "margin-right: 60px;";
+        }
+
+        // display message
+        item.innerHTML = `<b>${message.userName}</b>: ${message.body}<br>${message.timestamp}`;
+        appendLog(item, backgroundColor);
+    }
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var decodedCookie = decodeURIComponent(document.cookie);
+        var ca = decodedCookie.split(';');
+        for(var i = 0; i <ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
     }
 
 </script> 
