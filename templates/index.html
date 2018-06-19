@@ -70,9 +70,15 @@
     let conn;
     let msg = document.getElementById("msg");
     let log = document.getElementById("log");
-    let username = "Arman";
-
-    console.log(getCookie("auth"))
+    let username = ""
+    fetch("getuser", {
+        method: 'POST',
+        credentials: 'include'
+    }).then((resp) => {
+        return resp.json()
+    }).then((resp) => {
+        username = resp.user
+    })
 
     let websocketurl = "ws://" + document.location.host + "/chat"
     conn = new WebSocket(websocketurl)

@@ -60,6 +60,7 @@ func main() {
 	// handlers
 	r.HandleFunc("/", reqLogin(indexHandler))
 	r.HandleFunc("/login", loginHandler)
+	r.HandleFunc("/getuser", reqLogin(getuserHandler))
 
 	// handle server kill
 	signalChan := make(chan os.Signal, 1)
@@ -100,6 +101,10 @@ type loginResponse struct {
 	Status string `json:"status"`
 }
 
+type getuserResponse struct {
+	User string `json:"user"`
+}
+
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.Method + " --> " + r.URL.String())
 	if r.Method == "POST" {
@@ -117,6 +122,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 			// set auth cookie
 			session, _ := store.Get(r, "auth")
 			session.Values["auth"] = true
+			session.Values["user"] = lf.Username
 			session.Save(r, w)
 		} else {
 			loginResp.Status = "error"
@@ -131,6 +137,19 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	// GET login page
 	t, _ := template.ParseFiles(basePath, loginPath)
 	t.ExecuteTemplate(w, "base", "")
+}
+
+func getuserHandler(w http.ResponseWriter, r *http.Request) {
+	log.Println(r.Method + " --> " + r.URL.String())
+	session, _ := store.Get(r, "auth")
+	user, ok := session.Values["user"].(string)
+	if !ok {
+		log.Println("no username in cookie store")
+	}
+	log.Println("Get user: " + user)
+	resp := getuserResponse{user}
+	sendJSON(w, resp)
+	return
 }
 
 func checkLogin(uname, pword string) bool {

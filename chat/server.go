@@ -119,7 +119,11 @@ func (server *Server) Listen() {
 			delete(server.connectedUsers, user.id)
 
 		case msg := <-server.newIncomingMessage:
-			server.Messages = append(server.Messages, msg)
+			if len(server.Messages) > 5 {
+				server.shiftMessages(msg)
+			} else {
+				server.Messages = append(server.Messages, msg)
+			}
 			server.sendAll(msg)
 		case err := <-server.errorChannel:
 			log.Println("Error : ", err)
@@ -152,4 +156,11 @@ func (server *Server) handleChat(responseWriter http.ResponseWriter, request *ht
 
 func (server *Server) handleGetAllMessages(responseWriter http.ResponseWriter, request *http.Request) {
 	json.NewEncoder(responseWriter).Encode(server)
+}
+
+func (server *Server) shiftMessages(msg *Message) {
+	for i := 0; i < len(server.Messages)-1; i++ {
+		server.Messages[i] = server.Messages[i+1]
+	}
+	server.Messages[len(server.Messages)-1] = msg
 }
