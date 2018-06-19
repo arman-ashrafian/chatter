@@ -2,6 +2,10 @@
 {{ define "title" }} Login {{ end }} {{ define "style" }}
 <!-- CSS -->
 <style>
+    html {
+        background-color: #039BE5;
+    }
+
     #loginError {
         color: rgb(255, 68, 68);
         text-align: center;
@@ -28,8 +32,8 @@
 <!-- Page Content -->
 {{define "content" }}
 
-<div class="container">
-    <div id="my_name">
+<div class="container" id="content">
+    <div class="center-align">
         <h1>woo.</h1>
     </div>
 
@@ -39,7 +43,7 @@
                 <input type="text" id="username" placeholder="uSeRnAmE">
                 <input type="password" id="password" placeholder="pAsSwOrD">
                 <div class="center-align">
-                    <button class="btn btn-lg btn-primary blue darken-4 text-center" id="loginButton">Login</button>
+                    <button class="btn btn-lg btn-primary blue darken-4" id="loginButton">Login</button>
                 </div>
                 <p class="flow-text" id='loginError'>
                     </h3>
