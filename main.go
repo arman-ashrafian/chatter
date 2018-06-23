@@ -1,7 +1,7 @@
 package main
 
 import (
-	"digitaloceanssampleapp/chat"
+	"chatter/chat"
 	"encoding/json"
 	"fmt"
 	"html/template"
