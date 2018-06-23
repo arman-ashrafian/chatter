@@ -92,7 +92,6 @@ func (user *User) listenWrite() {
 }
 
 func (user *User) listenRead() {
-	//log.Println("Listening to Read to client")
 	for {
 		select {
 		//receive Done request

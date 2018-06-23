@@ -112,7 +112,7 @@ func (server *Server) Listen() {
 			log.Println("Added a new User")
 			server.connectedUsers[user.id] = user
 			log.Println("Now ", len(server.connectedUsers), " users are connected to chat room")
-			server.sendPastMessages(user)
+			//server.sendPastMessages(user)
 
 		case user := <-server.removeUser:
 			log.Println("Removing user from chat room")
@@ -154,8 +154,8 @@ func (server *Server) handleChat(responseWriter http.ResponseWriter, request *ht
 	user.Listen()
 }
 
-func (server *Server) handleGetAllMessages(responseWriter http.ResponseWriter, request *http.Request) {
-	json.NewEncoder(responseWriter).Encode(server)
+func (server *Server) handleGetAllMessages(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(server)
 }
 
 func (server *Server) shiftMessages(msg *Message) {
