@@ -15,11 +15,9 @@ import (
 )
 
 const (
-	materialcssCDN = "https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/css/materialize.min.css"
-	vuejsCDN       = "https://cdn.jsdelivr.net/npm/vue"
-	basePath       = "./templates/base.html"
-	indexPath      = "./templates/index.html"
-	loginPath      = "./templates/login.html"
+	basePath  = "./templates/base.html"
+	indexPath = "./templates/index.html"
+	loginPath = "./templates/login.html"
 )
 
 var (
