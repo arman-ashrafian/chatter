@@ -42,6 +42,7 @@ func main() {
 	logins["andrew"] = "ilovearman"
 	logins["luis"] = "ilovearman"
 	logins["westin"] = "ilovearman"
+	logins["maureen"] = "ilovearman"
 
 	// cache index template
 	indexTemplate = template.Must(template.ParseFiles(basePath, indexPath))
