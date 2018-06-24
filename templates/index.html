@@ -67,6 +67,10 @@
 {{define "js"}}
 <script>
     /* CHAT LOGIC */
+    const fetchOptions = {
+        method: 'POST',
+        credentials: 'include'
+    }
 
     let conn;
     let username;
@@ -96,6 +100,7 @@
     }
 
     conn.onmessage = (e) => {
+        console.log(e.data)
         displayMessage(e.data)
     }
 
@@ -155,22 +160,29 @@
     // fetchUsername
     // fetch() '/getuser' and return username
     async function fetchUsername() {
-        const resp = await fetch("getuser", {
-            method: 'POST',
-            credentials: 'include'
-        });
-        const json = await resp.json()
-        return json.user
+        const resp = await fetch("getuser", fetchOptions);
+        const json = await resp.json();
+        return json.user;
     }
 
-    function displayPastMessages() {
-        fetch('getAllMessages', {
-            method: 'POST',
-            credentials: 'include'
-        }).then((resp) => {
-            return resp.json()
-        }).then((resp) => {
-            console.log(resp);
-        })
+    async function displayPastMessages() {
+        const resp = await fetch('getAllMessages', fetchOptions);
+        const json = await resp.json();
+
+        for (let i = 0; i < json.messages.length; i++) {
+            let item = document.createElement("h4");
+            let message = json.messages[i];
+            if (message.userName === username) {
+                backgroundColor = "blue";
+                item.style.cssText = "margin-left: 60px;";
+            } else {
+                backgroundColor = "grey";
+                item.style.cssText = "margin-right: 60px;";
+            }
+
+            // display message
+            item.innerHTML = `<b>${message.userName}</b>: ${message.body}<br>${message.timestamp}`;
+            appendLog(item, backgroundColor);
+        }
     }
 </script> {{end}}
