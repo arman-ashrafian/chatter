@@ -1,6 +1,6 @@
 # chatter
 
-The purpose of the repository is to make a super simple chat application using web sockets in Go.
+The purpose of the repository is to make a simple chat application using web sockets in Go.
 
 ### what i learned
 1. How to use gorilla websocket library.
@@ -9,8 +9,9 @@ The purpose of the repository is to make a super simple chat application using w
 
 3. How to do concurrency with Go using channels.
 
-   Here is the main loop of the Chat Server, which listens to all the channels. This server is started in a go routine before running ``` http.ListenAndServe(...) ```
-
+   Here is the main loop of the chat server. This method is an infinite loop which listens to all the channels in the Server struct.
+   It runs without blocking by simply doing ```go server.Listen()```. 
+   
   ```go
   // Listen ...
   // infinite loop listening to channels
