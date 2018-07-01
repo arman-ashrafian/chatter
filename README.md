@@ -63,7 +63,7 @@ The purpose of the repository is to make a simple chat application using web soc
   ...
   
   // This function recieves a handler and checks to see if the user is logged in.
-  // If the use is not logged it they will be rerouted to "/login", otherwise
+  // If the user is not logged in they will be rerouted to "/login", otherwise
   // the handler the function recieves will be executed like normal. 
   func reqLogin(f http.HandlerFunc) http.HandlerFunc {
     return func(w http.ResponseWriter, r *http.Request) {
