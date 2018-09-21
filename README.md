@@ -2,7 +2,7 @@
 
 The purpose of the repository is to make a simple chat application using web sockets in Go.
 
-<img src="screenshots/chat.gif">
+<img src="screenshots/chatter.gif">
 
 ### what i learned
 1. How to use gorilla websocket library.
