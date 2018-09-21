@@ -88,7 +88,7 @@ func reqLogin(f http.HandlerFunc) http.HandlerFunc {
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	log.Println(r.Method + " --> " + r.URL.String())
 
-	indexTemplate.ExecuteTemplate(w, "base", "Arman Ashrafian")
+	indexTemplate.ExecuteTemplate(w, "base", "chatter")
 }
 
 type loginForm struct {
